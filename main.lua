@@ -6,7 +6,12 @@ require "drop"
 require "bomba"
 
 function love.load()
+  love.window.setMode(360, 640, {resizable=false})
+  --love.window.setMode(360, 640, {fullscreen=true})
+  --love.window.setMode(180, 320, {resizable=false})
+  love.window.setFullscreen(true)
   anchoDePantalla = love.graphics.getWidth()
+  altoDePantalla = love.graphics.getHeight()
   dropeos = {}
   puntajes = {
     actual = 0,
@@ -25,7 +30,7 @@ function love.load()
 
 
   --genera al jugador al centro, abajo de la pantalla
-  pixel = Pixel(anchoDePantalla / 2, love.graphics.getHeight() - love.graphics.getHeight() / 6)
+  pixel = Pixel(anchoDePantalla / 2, love.graphics.getHeight() - love.graphics.getHeight() / 8)
   pixeles = {}
   table.insert(pixeles, pixel)
 
@@ -42,18 +47,16 @@ function love.load()
   menuElegido = 0
   modoDebug = 0
 
+  xTouch = anchoDePantalla / 2
+  yTouch = 0
+  tocado = false
+
 end
 
 
 function love.update(dt)
-  if love.keyboard.isDown("space") then
+  if tocado == true then
     menuElegido = 1
-  end
-
-  if love.keyboard.isDown("0") then
-    modoDebug = 1
-  elseif love.keyboard.isDown("9") then
-    modoDebug = 0
   end
 
   if menuElegido == 1 then
@@ -67,7 +70,7 @@ function love.update(dt)
 
       dibujarCuadrado()
       --posicion aleatoria entre el ancho de la pantalla
-      origen = love.math.random(anchoDePantalla)
+      origen = love.math.random(anchoDePantalla - 16)
 
       --numero al azar en cada segundo
       azar = love.math.random(100) - tiempoPasado / 2
@@ -119,10 +122,11 @@ end--cierra el update
 
 function love.draw()
   if menuElegido == 0 then
-    anchoDeTexto = love.graphics.getFont():getWidth("Press 'space' to start")
-    love.graphics.print("Press 'space' to start", anchoDePantalla / 2 - anchoDeTexto / 2, love.graphics.getHeight() / 2)
+    anchoDeTexto = love.graphics.getFont():getWidth("Touch to start")
+    love.graphics.print("Touch to start", anchoDePantalla / 2 - anchoDeTexto / 2, love.graphics.getHeight() / 2)
     love.graphics.rectangle("line", anchoDePantalla / 2 - anchoDeTexto / 2 - 10, love.graphics.getHeight() / 2 - 5, anchoDeTexto + 20, 25)
     love.graphics.print("Last score: " .. puntajes.ultimo, 20, love.graphics.getHeight() - 20)
+    anchoDeTexto = love.graphics.getFont():getWidth("Best score: XXXXX.")
     love.graphics.print("Best score: " .. puntajes.mejor, anchoDePantalla - anchoDeTexto, love.graphics.getHeight() - 20)
   end
   if menuElegido == 1 then
@@ -133,7 +137,7 @@ function love.draw()
       love.graphics.print("dt: " .. delta, anchoDePantalla - 100, love.graphics.getHeight() - 30)
       love.graphics.print("dropeando: " .. droppin, anchoDePantalla - 200, 30)
     end
-    love.graphics.print("Puntaje: ".. puntaje, 0, 30)
+    love.graphics.print("Puntaje: ".. puntaje, 10, 40)
 
     --dibuja cuadrados en las posiciones guardadas en la tabla cuadrados
     for i,v in ipairs(dropeos) do
@@ -143,6 +147,12 @@ function love.draw()
     for i,v in ipairs(pixeles) do
       v:draw()
     end
+  end
+end
+
+function love.touchpressed(iden, xpos, ypos, dxpos, dypos, pressure)
+  if true then
+    tocado = true
   end
 end
 
